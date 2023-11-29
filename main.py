@@ -7,9 +7,9 @@
 """
 
 from tkinter import *
-from random import randint
 from hashlib import sha256
 from eliptic_curve import EllipticCurve, ECPoint
+import secrets
 
 
 def keygen():
@@ -22,7 +22,7 @@ def keygen():
     ecurve = EllipticCurve(prime, point, 0, 7)  # y^2 = x^3 + 7
 
     # generate private key
-    private_k = randint(1, prime)  # private key
+    private_k = secrets.SystemRandom().randint(1, prime)  # private key
     public_k = ecurve.mul(point, private_k)  # public key
     return private_k, ecurve, point, prime, public_k
 
@@ -33,7 +33,7 @@ def encrypt(message, e_curve, point, prime, public_key):
         return: cypher
     """
 
-    number_ecc = randint(1, prime)  # random int k
+    number_ecc = secrets.SystemRandom().randint(1, prime)  # random int k
     c1 = e_curve.mul(point, number_ecc)  # kG
     hs = sha256(repr(e_curve.mul(public_key, number_ecc)).encode('utf-8')).digest()  # encrypting message based on point
     c2 = bytearray([i ^ j for i, j in zip(bytes(message), bytes(hs))])  # second cipher
